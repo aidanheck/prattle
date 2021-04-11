@@ -26,7 +26,7 @@ export default class Start extends Component {
 
   render() {
     /**TextInput will set the user's name.
-     * Touching a TouchableOpacity will set the background color on the next screen.
+     * Touching a TouchableOpacity will set the background color in the application's state on the next screen.
      */
     return (
       <ImageBackground
@@ -43,11 +43,9 @@ export default class Start extends Component {
             placeholder='enter your name here...'
             accessible={true}
             accessibilityLabel='name input'
-            accessibilityRole='text'
           />
           <Text style={styles.backgroundLabel}>choose background color:</Text>
-          //when a color is tapped on by the user, it is stored in the state as
-          the background color for the chat room
+
           <View style={styles.colorSelection}>
             <TouchableOpacity
               onPress={() => this.setState({ color: '#FFF9F7' })}
@@ -95,7 +93,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff9f7',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '50%',
+    width: '80%',
     height: 250,
     margin: 20,
     padding: 10,
@@ -113,9 +111,9 @@ const styles = StyleSheet.create({
   },
 
   nameInput: {
-    width: '30%',
+    width: '50%',
     height: 40,
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: '300',
     color: '#1B1618',
     opacity: 50,
@@ -123,6 +121,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 2,
     padding: 10,
+    marginTop: 20,
     marginLeft: 'auto',
     marginRight: 'auto',
   },
@@ -141,6 +140,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   colorSelection: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
     marginTop: 10,
+    marginBottom: 20,
     fontSize: 16,
     fontWeight: '300',
     color: '#fff9f7',
