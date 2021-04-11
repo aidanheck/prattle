@@ -3,7 +3,6 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  Platform,
   ImageBackground,
   Text,
   View,
@@ -13,7 +12,7 @@ import {
 } from 'react-native';
 /**
  *@requires react
- *@requires react-native
+ *@requires react-nativeb
  */
 
 export default class Start extends Component {
@@ -36,18 +35,19 @@ export default class Start extends Component {
       >
         <Text style={styles.title}>prattle</Text>
         <View style={styles.container}>
-
           <TextInput
-								style={styles.nameInput}
-								// when name is changed it's stored in the state to pass on to a chat room
-								onChangeText={(name) => this.setState({ name })}
-								value={this.state.name}
-								placeholder="enter your name here..."
-                accessible={true}
-                accessibilityLabel='name input'
-                accessibilityRole='text'
-							/>
+            style={styles.nameInput}
+            // when name is changed it's stored in the state to pass on to a chat room
+            onChangeText={(name) => this.setState({ name })}
+            value={this.state.name}
+            placeholder='enter your name here...'
+            accessible={true}
+            accessibilityLabel='name input'
+            accessibilityRole='text'
+          />
           <Text style={styles.backgroundLabel}>choose background color:</Text>
+          //when a color is tapped on by the user, it is stored in the state as
+          the background color for the chat room
           <View style={styles.colorSelection}>
             <TouchableOpacity
               onPress={() => this.setState({ color: '#FFF9F7' })}
@@ -66,18 +66,6 @@ export default class Start extends Component {
               style={[styles.colorButton, styles.color4]}
             />
           </View>
-          {/* <Button
-            accessible={true}
-            accessibilityLabel='start a conversation'
-            style={styles.enterButton}
-            title='prattle on!'
-            onPress={() =>
-              this.props.navigation.navigate('Prattle', {
-                name: this.state.name,
-                color: this.state.color,
-              })
-            }
-          ></Button> */}
           <TouchableOpacity
             style={styles.enterButton}
             onPress={() =>
