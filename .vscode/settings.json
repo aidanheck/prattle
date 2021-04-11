@@ -1,0 +1,9 @@
+{
+      "prettier.enableDebugLogs": true,
+      "prettier.jsxSingleQuote": true,
+      "prettier.insertPragma": true,
+      "bracketPairColorizer.forceUniqueOpeningColor": true,
+      "javascript.preferences.quoteStyle": "single",
+      "typescript.preferences.quoteStyle": "single",
+      "prettier.singleQuote": true
+}

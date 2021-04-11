@@ -1,21 +1,17 @@
-import { StatusBar } from 'expo-status-bar';
+/** @format */
+
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import Start from './components/Start';
+import Prattle from './components/Prattle';
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+const navigator = createStackNavigator({
+  Start: { screen: Start },
+  Prattle: { screen: Prattle },
 });
+
+const navigatorContainer = createAppContainer(navigator);
+
+export default navigatorContainer;
