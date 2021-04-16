@@ -61,7 +61,6 @@ export default class Prattle extends Component {
         avatar: '',
       },
     };
-    this.storedMessages = firebase.firestore().collection('messages');
   }
 
   /**
@@ -192,7 +191,7 @@ export default class Prattle extends Component {
       return <InputToolbar {...props} />;
     }
   }
-  
+
   renderBubble(props) {
     return (
       <Bubble
@@ -220,6 +219,7 @@ export default class Prattle extends Component {
         this.setState({
           isConnected: true,
         });
+        this.storedMessages = firebase.firestore().collection('messages');
         this.authUnsubscribe = firebase
           .auth()
           .onAuthStateChanged(async (user) => {
@@ -231,11 +231,11 @@ export default class Prattle extends Component {
               user: {
                 _id: user.uid,
                 name: this.props.navigation.state.params.name,
-                messages: [],
               },
+              messages: [],
               loggedInMessage: `${this.props.navigation.state.params.name} has entered the chat`,
             });
-            this.authUnsubscribe = this.storedMessages
+            this.unsubscribeUser = this.storedMessages
               .orderBy('createdAt', 'desc')
               .onSnapshot(this.onCollectionUpdate);
           });
@@ -250,6 +250,9 @@ export default class Prattle extends Component {
   }
 
   componentWillUnmount() {
+    //app stops listening for authentication
+    this.unsubscribeUser();
+    //app stops listening for changes
     this.authUnsubscribe();
   }
 
