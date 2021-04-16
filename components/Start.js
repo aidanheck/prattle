@@ -56,18 +56,18 @@ export default class Start extends Component {
               style={[styles.colorButton, styles.color2]}
             />
             <TouchableOpacity
-              onPress={() => this.setState({ color: '#FF9D7D' })}
+              onPress={() => this.setState({ color: '#FFA552' })}
               style={[styles.colorButton, styles.color3]}
             />
             <TouchableOpacity
-              onPress={() => this.setState({ color: '#74B7FF' })}
+              onPress={() => this.setState({ color: '#63ABA5' })}
               style={[styles.colorButton, styles.color4]}
             />
           </View>
           <TouchableOpacity
             style={styles.enterButton}
             onPress={() =>
-              this.props.navigation.navigate('Prattle', {
+              this.props.navigation.navigate('prattle', {
                 name: this.state.name,
                 color: this.state.color,
               })
@@ -90,17 +90,17 @@ export default class Start extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff9f7',
+    backgroundColor: 'rgba(255, 249, 247, .83)',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '80%',
+    width: '75%',
     height: 250,
     margin: 20,
     padding: 10,
     position: 'absolute',
     bottom: 20,
     borderWidth: 0,
-    borderRadius: 80,
+    borderRadius: 50,
   },
 
   backImage: {
@@ -134,9 +134,10 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     alignItems: 'center',
-    fontSize: 45,
-    fontWeight: '600',
-    color: '#FF9D7D',
+    fontSize: 70,
+    fontWeight: '800',
+    fontFamily: 'serif',
+    color: '#FFA552',
     paddingTop: 10,
   },
   colorSelection: {
@@ -160,10 +161,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#E8F7EE',
   },
   color3: {
-    backgroundColor: '#FF9D7D',
+    backgroundColor: '#FFA552',
   },
   color4: {
-    backgroundColor: '#74B7FF',
+    backgroundColor: '#63ABA5',
   },
   enterButton: {
     elevation: 8,

@@ -1,17 +1,40 @@
 /** @format */
 
 import React, { Component } from 'react';
-import { LogBox, Text, View, Platform, KeyboardAvoidingView, StyleSheet } from 'react-native';
-import { Bubble, GiftedChat } from 'react-native-gifted-chat';
-
-/**
- * @class Prattle
- * @requires React
- * @requires React-native
- */
+import {
+  Text,
+  View,
+  Platform,
+  KeyboardAvoidingView,
+  StyleSheet,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
+import { Bubble, GiftedChat, InputToolbar } from 'react-native-gifted-chat';
 
 const firebase = require('firebase');
 require('firebase/firestore');
+
+/**
+ * @class prattle
+ * @requires React
+ * @requires react-native
+ * @requires react-native-keyboard-spacer
+ * @requires react-native-gifted-chat
+ * @requires react-native-community/netinfo
+ */
+
+/**
+ * credentials for firebase
+ * @constant firebaseConfig
+ * @type {object}
+ * @default
+ * @param {string} apiKey
+ * @param {string} authDomain
+ * @param {string} projectId
+ * @param {string} storageBucket
+ * @param {string} messageSenderId
+ */
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBazMs0jNAJGtfLdTY3szvywhlz2Ah_thk',
@@ -28,55 +51,17 @@ export default class Prattle extends Component {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
-
     this.state = {
       messages: [],
+      isConnected: false,
+      loggedInMessage: '',
       user: {
         _id: '',
         name: '',
         avatar: '',
       },
-      loggedInMessage: '',
     };
-  }
-  /**
-   * credentials for firebase
-   * @constant firebaseConfig
-   * @type {object}
-   * @default
-   */
-
-  /**
-   * checks if user is online, handles authentication and then sets default data for a user if none is provided
-   * @params {string} _id
-   * @params {string} name
-   * @params {string} avatar
-   * called in componentWillMount()
-   */
-
-  componentDidMount() {
     this.storedMessages = firebase.firestore().collection('messages');
-    this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
-      if (!user) {
-        await firebase.auth().signInAnonymously();
-      }
-      //update the user state with active user data
-      this.setState({
-        user: {
-          _id: user.uid,
-          name: this.props.navigation.state.params.name,
-        },
-        loggedInMessage: `${this.props.navigation.state.params.name} has entered the chat`,
-      });
-      this.authUnsubscribe = this.storedMessages
-        .orderBy('createdAt', 'desc')
-        .onSnapshot(this.onCollectionUpdate);
-    });
-  }
-
-  componentWillUnmount() {
-    this.authUnsubscribe();
-    // this.unsubscribe();
   }
 
   /**
@@ -84,7 +69,7 @@ export default class Prattle extends Component {
    * @function onCollectionUpdate
    * @param {string} _id - message id
    * @param {string} text - content
-   * @param {date} cratedAt - date and time sent
+   * @param {date} createdAt - date and time sent
    * @param {string} user - user data
    * @returns {state}
    */
@@ -129,6 +114,62 @@ export default class Prattle extends Component {
     });
   };
 
+  /**
+   * loads all messages from AsyncStorage
+   * @async
+   * @function getMessages
+   * @param {string} messages
+   * @return {state} messages
+   */
+  async getMessages() {
+    let messages = '';
+    try {
+      messages = (await AsyncStorage.getItem('messages')) || [];
+      this.setState({
+        messages: JSON.parse(messages),
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  /**
+   * saves all messages with AsyncStorage
+   * @async
+   * @function saveMessages
+   * @param {string} messages
+   * @return {AsyncStorage}
+   */
+  async saveMessages() {
+    try {
+      await AsyncStorage.setItem(
+        'messages',
+        JSON.stringify(this.state.messages)
+      );
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  /**
+   * deletes messages with AsyncStorage
+   * @async
+   * @function deleteMessages
+   * @param {string} messages
+   * @return {AsyncStorage}
+   */
+
+  async deleteMessages() {
+    try {
+      await AsyncStorage.removeItem('messages');
+      this.setState({
+        messages: [],
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
   onSend(messages = []) {
     this.setState(
       (previousState) => ({
@@ -136,10 +177,22 @@ export default class Prattle extends Component {
       }),
       () => {
         this.addMessages();
+        this.saveMessages();
       }
     );
   }
 
+  /**will not render the toolbar if the app is offline
+   * @function renderInputToolbar
+   */
+
+  renderInputToolbar(props) {
+    if (this.state.isConnected == false) {
+    } else {
+      return <InputToolbar {...props} />;
+    }
+  }
+  
   renderBubble(props) {
     return (
       <Bubble
@@ -153,6 +206,53 @@ export default class Prattle extends Component {
     );
   }
 
+  /**
+   * checks if user is online, handles authentication and then sets default data for a user if none is provided
+   * @params {string} _id
+   * @params {string} name
+   * @params {string} avatar
+   * called in componentWillMount()
+   */
+
+  componentDidMount() {
+    NetInfo.fetch().then((connection) => {
+      if (connection.isConnected) {
+        this.setState({
+          isConnected: true,
+        });
+        this.authUnsubscribe = firebase
+          .auth()
+          .onAuthStateChanged(async (user) => {
+            if (!user) {
+              await firebase.auth().signInAnonymously();
+            }
+            //update the user state with active user data
+            this.setState({
+              user: {
+                _id: user.uid,
+                name: this.props.navigation.state.params.name,
+                messages: [],
+              },
+              loggedInMessage: `${this.props.navigation.state.params.name} has entered the chat`,
+            });
+            this.authUnsubscribe = this.storedMessages
+              .orderBy('createdAt', 'desc')
+              .onSnapshot(this.onCollectionUpdate);
+          });
+      } else {
+        this.setState({
+          isConnected: false,
+          loggedInMessage: `${this.props.navigation.state.params.name} has entered the chat, but is offline`,
+        });
+        this.getMessages();
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.authUnsubscribe();
+  }
+
   render() {
     /**Prattle component uses user name and background color defined in Start component */
     return (
@@ -163,7 +263,9 @@ export default class Prattle extends Component {
         }}
       >
         <View style={styles.welcomeBox}>
-        <Text style={styles.loggedInMessage}>{this.state.loggedInMessage}</Text>
+          <Text style={styles.loggedInMessage}>
+            {this.state.loggedInMessage}
+          </Text>
         </View>
         <GiftedChat
           renderBubble={this.renderBubble.bind(this)}

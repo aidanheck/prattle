@@ -8,24 +8,11 @@ import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
 const navigator = createStackNavigator({
-  Start: { screen: Start },
-  Prattle: { screen: Prattle },
+  start: { screen: Start },
+  prattle: { screen: Prattle },
 });
 
 const navigatorContainer = createAppContainer(navigator);
 
 export default navigatorContainer;
 
-// const Stack = createStackNavigator();
-// export default class App extends Component {
-//   render() {
-//     return (
-//       <NavigationContainer>
-//         <Stack.Navigator initialRouteName='Start'>
-//           <Stack.Screen name='Start' component={Start} />
-//           <Stack.Screen name='Prattle' component={Prattle} />
-//         </Stack.Navigator>
-//       </NavigationContainer>
-//     );
-//   }
-// }
