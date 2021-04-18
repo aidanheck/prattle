@@ -8,12 +8,7 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  Button,
 } from 'react-native';
-/**
- *@requires react
- *@requires react-nativeb
- */
 
 export default class Start extends Component {
   constructor(props) {
@@ -136,7 +131,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     fontSize: 70,
     fontWeight: '800',
-    fontFamily: 'serif',
     color: '#FFA552',
     paddingTop: 10,
   },

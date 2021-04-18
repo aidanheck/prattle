@@ -15,4 +15,3 @@ const navigator = createStackNavigator({
 const navigatorContainer = createAppContainer(navigator);
 
 export default navigatorContainer;
-

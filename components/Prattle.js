@@ -36,21 +36,10 @@ require('firebase/firestore');
  * @param {string} messageSenderId
  */
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyBazMs0jNAJGtfLdTY3szvywhlz2Ah_thk',
-  authDomain: 'prattle-be18a.firebaseapp.com',
-  projectId: 'prattle-be18a',
-  storageBucket: 'prattle-be18a.appspot.com',
-  messagingSenderId: '431205066460',
-};
-
 export default class Prattle extends Component {
   constructor() {
     super();
-    //initialize firebase
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
+
     this.state = {
       messages: [],
       isConnected: false,
@@ -61,6 +50,69 @@ export default class Prattle extends Component {
         avatar: '',
       },
     };
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyBazMs0jNAJGtfLdTY3szvywhlz2Ah_thk',
+      authDomain: 'prattle-be18a.firebaseapp.com',
+      projectId: 'prattle-be18a',
+      storageBucket: 'prattle-be18a.appspot.com',
+      messagingSenderId: '431205066460',
+    };
+    //initialize firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+  }
+
+  /**
+   * checks if user is online, handles authentication and then sets default data for a user if none is provided
+   * @params {string} _id
+   * @params {string} name
+   * @params {string} avatar
+   * called in componentWillMount()
+   */
+
+  componentDidMount() {
+    NetInfo.fetch().then((connection) => {
+      if (connection.isConnected) {
+        console.log('online');
+        this.setState({
+          isConnected: true,
+        });
+        this.storedMessages = firebase.firestore().collection('messages');
+        this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
+          if (!user) {
+            firebase.auth().signInAnonymously();
+          }
+          //update the user state with active user data
+          this.setState({
+            user: {
+              _id: user.uid,
+              name: this.props.navigation.state.params.name,
+            },
+            messages: [],
+            loggedInMessage: `${this.props.navigation.state.params.name} has entered the chat`,
+          });
+          this.unsubscribe = this.storedMessages
+            .orderBy('createdAt', 'desc')
+            .onSnapshot(this.onCollectionUpdate);
+        });
+      } else {
+        console.log('offline');
+        this.setState({
+          isConnected: false,
+          loggedInMessage: `${this.props.navigation.state.params.name} has entered the chat, but is offline`,
+        });
+        this.getMessages();
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    //app stops listening for changes
+    this.authUnsubscribe();
+    //app stops listening for authentication
+    this.unsubscribe();
   }
 
   /**
@@ -181,16 +233,16 @@ export default class Prattle extends Component {
     );
   }
 
-  /**will not render the toolbar if the app is offline
-   * @function renderInputToolbar
-   */
-
   renderInputToolbar(props) {
     if (this.state.isConnected == false) {
-    } else {
-      return <InputToolbar {...props} />;
+    }  else {
+        return (
+            <InputToolbar
+                {...props}
+            />
+        );
     }
-  }
+}
 
   renderBubble(props) {
     return (
@@ -203,57 +255,6 @@ export default class Prattle extends Component {
         }}
       />
     );
-  }
-
-  /**
-   * checks if user is online, handles authentication and then sets default data for a user if none is provided
-   * @params {string} _id
-   * @params {string} name
-   * @params {string} avatar
-   * called in componentWillMount()
-   */
-
-  componentDidMount() {
-    NetInfo.fetch().then((connection) => {
-      if (connection.isConnected) {
-        this.setState({
-          isConnected: true,
-        });
-        this.storedMessages = firebase.firestore().collection('messages');
-        this.authUnsubscribe = firebase
-          .auth()
-          .onAuthStateChanged(async (user) => {
-            if (!user) {
-              await firebase.auth().signInAnonymously();
-            }
-            //update the user state with active user data
-            this.setState({
-              user: {
-                _id: user.uid,
-                name: this.props.navigation.state.params.name,
-              },
-              messages: [],
-              loggedInMessage: `${this.props.navigation.state.params.name} has entered the chat`,
-            });
-            this.unsubscribeUser = this.storedMessages
-              .orderBy('createdAt', 'desc')
-              .onSnapshot(this.onCollectionUpdate);
-          });
-      } else {
-        this.setState({
-          isConnected: false,
-          loggedInMessage: `${this.props.navigation.state.params.name} has entered the chat, but is offline`,
-        });
-        this.getMessages();
-      }
-    });
-  }
-
-  componentWillUnmount() {
-    //app stops listening for authentication
-    this.unsubscribeUser();
-    //app stops listening for changes
-    this.authUnsubscribe();
   }
 
   render() {
