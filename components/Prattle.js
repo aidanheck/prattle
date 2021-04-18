@@ -235,11 +235,9 @@ export default class Prattle extends Component {
 
   renderInputToolbar(props) {
     if (this.state.isConnected == false) {
-    }  else {
+    } else {
         return (
-            <InputToolbar
-                {...props}
-            />
+            <InputToolbar {...props}/>
         );
     }
 }
@@ -273,6 +271,7 @@ export default class Prattle extends Component {
         </View>
         <GiftedChat
           renderBubble={this.renderBubble.bind(this)}
+          renderInputToolbar={this.renderInputToolbar.bind(this)}
           messages={this.state.messages}
           onSend={(messages) => this.onSend(messages)}
           user={this.state.user}
