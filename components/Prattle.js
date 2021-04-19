@@ -7,10 +7,18 @@ import {
   Platform,
   KeyboardAvoidingView,
   StyleSheet,
+  LogBox,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { Bubble, GiftedChat, InputToolbar } from 'react-native-gifted-chat';
+import MapView from 'react-native-maps';
+import CustomActions from './CustomActions';
+import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
+// Prevents the screen from sleeping until deactivateKeepAwake is called with the same tag value.
+activateKeepAwake('tag');
+// Releases the lock on screen-sleep prevention associated with the given tag value.
+deactivateKeepAwake('tag');
 
 const firebase = require('firebase');
 require('firebase/firestore');
@@ -49,7 +57,11 @@ export default class Prattle extends Component {
         name: '',
         avatar: '',
       },
+      location: null,
+      image: null,
     };
+
+    LogBox.ignoreAllLogs();
 
     const firebaseConfig = {
       apiKey: 'AIzaSyBazMs0jNAJGtfLdTY3szvywhlz2Ah_thk',
@@ -140,6 +152,8 @@ export default class Prattle extends Component {
           name: data.user.name,
           avatar: data.user.avatar,
         },
+        image: data.image || null,
+        location: data.location || null,
       });
     });
     this.setState({
@@ -162,6 +176,8 @@ export default class Prattle extends Component {
       text: message.text || '',
       createdAt: message.createdAt,
       user: message.user,
+      image: message.image || null,
+      location: message.location || null,
     });
   };
 
@@ -236,11 +252,9 @@ export default class Prattle extends Component {
   renderInputToolbar(props) {
     if (this.state.isConnected == false) {
     } else {
-        return (
-            <InputToolbar {...props}/>
-        );
+      return <InputToolbar {...props} />;
     }
-}
+  }
 
   renderBubble(props) {
     return (
@@ -253,6 +267,28 @@ export default class Prattle extends Component {
         }}
       />
     );
+  }
+
+  renderCustomActions = (props) => {
+    return <CustomActions {...props} />;
+  };
+
+  renderCustomView(props) {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={styles.map}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        ></MapView>
+      );
+    }
+    return null;
   }
 
   render() {
@@ -269,12 +305,21 @@ export default class Prattle extends Component {
             {this.state.loggedInMessage}
           </Text>
         </View>
+        {this.state.image && (
+          <Image
+            source={{ uri: this.state.image.uri }}
+            style={{ width: 200, height: 200 }}
+          />
+        )}
         <GiftedChat
           renderBubble={this.renderBubble.bind(this)}
           renderInputToolbar={this.renderInputToolbar.bind(this)}
+          renderActions={this.renderCustomActions.bind(this)}
+          renderCustomView={this.renderCustomView.bind(this)}
           messages={this.state.messages}
           onSend={(messages) => this.onSend(messages)}
           user={this.state.user}
+          image={this.state.image}
         />
         {Platform.OS === 'android' ? (
           <KeyboardAvoidingView behavior='height' />
@@ -299,4 +344,5 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 5,
   },
+  map: { width: 200, height: 200, borderRadius: 13, margin: 3 },
 });

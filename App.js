@@ -1,6 +1,5 @@
 /** @format */
 
-import React from 'react';
 import Start from './components/Start';
 import Prattle from './components/Prattle';
 // import { NavigationContainer } from '@react-navigation/native';
