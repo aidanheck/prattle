@@ -188,8 +188,9 @@ export default class Prattle extends Component {
    * @param {string} messages
    * @return {state} messages
    */
-  async getMessages() {
-    let messages = '';
+
+  getMessages = async () => {
+    let messages = [];
     try {
       messages = (await AsyncStorage.getItem('messages')) || [];
       this.setState({
@@ -198,7 +199,7 @@ export default class Prattle extends Component {
     } catch (error) {
       console.log(error.message);
     }
-  }
+  };
 
   /**
    * saves all messages with AsyncStorage
@@ -207,7 +208,7 @@ export default class Prattle extends Component {
    * @param {string} messages
    * @return {AsyncStorage}
    */
-  async saveMessages() {
+  saveMessages = async () => {
     try {
       await AsyncStorage.setItem(
         'messages',
@@ -216,7 +217,7 @@ export default class Prattle extends Component {
     } catch (error) {
       console.log(error.message);
     }
-  }
+  };
 
   /**
    * deletes messages with AsyncStorage
@@ -226,7 +227,7 @@ export default class Prattle extends Component {
    * @return {AsyncStorage}
    */
 
-  async deleteMessages() {
+  deleteMessages = async () => {
     try {
       await AsyncStorage.removeItem('messages');
       this.setState({
@@ -235,7 +236,7 @@ export default class Prattle extends Component {
     } catch (error) {
       console.log(error.message);
     }
-  }
+  };
 
   onSend(messages = []) {
     this.setState(
@@ -277,15 +278,22 @@ export default class Prattle extends Component {
     const { currentMessage } = props;
     if (currentMessage.location) {
       return (
-        <MapView
-          style={styles.map}
-          region={{
-            latitude: currentMessage.location.latitude,
-            longitude: currentMessage.location.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        ></MapView>
+        <View>
+          <MapView
+            style={{
+              width: 150,
+              height: 100,
+              borderRadius: 13,
+              margin: 3,
+            }}
+            region={{
+              latitude: currentMessage.location.latitude,
+              longitude: currentMessage.location.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          ></MapView>
+        </View>
       );
     }
     return null;
@@ -344,5 +352,4 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 5,
   },
-  map: { width: 200, height: 200, borderRadius: 13, margin: 3 },
 });
