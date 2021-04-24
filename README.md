@@ -46,12 +46,16 @@ project dependencies
 
 Google Firestore database was used for this app.
 
-1. Go to Google Firebase and click on “sign in”
-2. Click on the “go to console” link and click on Create Project
-3. A form will appear asking for basic information.
-4. Give your new project a name.
-5. With the default settings selected, agree to the terms and click “Create Project.”
-6. Create a database then click on “Develop” from the menu on the left-hand side.
-7. From the additional menu that appears, select “Database”.
-8. Choose “Create database” in the Cloud Firestore section.
-9. Make sure to create a Firestore Database—not a “Realtime Database.”
+1. go to Google Firebase and click on “sign in”
+2. click on the “go to console” link and click on create project
+3. a form will appear asking for basic information
+4. give your new project a name
+5. with the default settings selected, agree to the terms and click “create project”
+6. create a database then click on “develop” from the menu on the left-hand side
+7. select "database" from the menu that appears
+8. choose “create database” in the Cloud Firestore section
+9. make sure to create a Firestore Database and not a “realtime database”
+
+## kanban
+
+![project kanban board](https://i.imgur.com/Al5MyXk.png)
