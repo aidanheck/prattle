@@ -13,6 +13,7 @@ npm-debug.*
 web-build/
 babel.config.js
 .eslintrc.js
+package 2.json
 
 # macOS
 .DS_Store
